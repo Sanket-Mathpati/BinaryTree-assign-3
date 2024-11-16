@@ -1,0 +1,120 @@
+1) sol:- #include<iostream>
+          using namespace std;
+          class Node{
+          public:
+              int val;
+              Node* left;
+              Node* right;
+              Node(int value){
+                  val = value;
+                  left = right = NULL;
+              }
+          };
+          void display(Node* root){
+              if(root==NULL) return;
+              cout<<root->val<<" ";
+              display(root->left);
+              display(root->right);
+              return;
+          }
+          void leftdisplay(Node* root){
+              if(root==NULL) return;
+              if(root->left==NULL && root->right==NULL) return;
+              cout<<root->val<<" ";
+              leftdisplay(root->left);
+              if(root->left==NULL) leftdisplay(root->right);
+          }
+          void bottomdisplay(Node* root){
+              if(root==NULL) return;
+              if(root->left==NULL && root->right==NULL) cout<<root->val<<" ";
+              bottomdisplay(root->left);
+              bottomdisplay(root->right);
+          }
+          void rightdisplay(Node* root){
+              if(root==NULL) return;
+              if(root->left==NULL && root->right==NULL) return;
+              rightdisplay(root->right);
+              if(root->right==NULL) rightdisplay(root->left);
+              cout<<root->val<<" ";
+          }
+          int main(){
+              Node* a = new Node(1);
+              Node* b = new Node(2);
+              Node* c = new Node(3);
+              Node* d = new Node(4);
+              Node* e = new Node(5);
+              a->left = b;
+              a->right = c;
+              b->right = e;
+              c->right = d;
+              leftdisplay(a);
+              cout<<endl;
+              bottomdisplay(a);
+              cout<<endl;
+              rightdisplay(a->right);
+          }
+  2) sol:- class Solution {
+            public:
+                bool check = false;
+                bool isSum(TreeNode* root,vector<int>v,int tar){
+                    if(root==NULL) return check; 
+                    if(root->left==NULL && root->right==NULL){
+                        if(tar==root->val){
+                            v.push_back(root->val);
+                            check = true;
+                            return check;
+                        }
+                    }
+                    v.push_back(root->val);
+                    isSum(root->left,v,tar-(root->val));
+                    isSum(root->right,v,tar-(root->val));
+                    return check;
+                }
+                bool hasPathSum(TreeNode* root, int targetSum) {
+                    vector<int>v;
+                    return isSum(root,v,targetSum);
+                }
+            };
+3) sol:- class Solution {
+          public:
+              TreeNode* build(vector<int>& inorder,int il,int ih,vector<int>& postorder,int pl,int ph){
+                  if(pl>ph) return NULL;
+                  TreeNode* root = new TreeNode(postorder[ph]);
+                  if(il==ih) return root;
+                  int i = il;
+                  while(i<ih){
+                      if(inorder[i]==postorder[ph]) break;
+                      i++;
+                  }
+                  int ld = i-il;
+                  root->left = build(inorder,il,i-1,postorder,pl,pl+ld-1);
+                  root->right = build(inorder,i+1,ih,postorder,pl+ld,ph-1);
+                  return root;
+              }
+              TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+                  int n = inorder.size();
+                  return build(inorder,0,n-1,postorder,0,n-1);
+              }
+          };
+4) sol:- class Solution {
+          public:
+              TreeNode* build(vector<int>& preorder,int prelo,int prehi,vector<int>& postorder,int polo,int pohi){
+                  if(prelo>prehi) return NULL;
+                  TreeNode* root = new TreeNode(preorder[prelo]);
+                  if(prelo==prehi) return root;
+                  int i = pohi;
+                  while(pohi>0){
+                      if(postorder[i]==preorder[prelo+1]) break;
+                      i--;
+                  }
+                  int ld = i-polo;
+                  int rd = pohi-i;
+                  root->left = build(preorder,prelo+1,prelo+ld+1,postorder,polo,i);
+                  root->right = build(preorder,prelo+ld+2,prehi,postorder,i+1,pohi-1);
+                  return root;
+              }
+              TreeNode* constructFromPrePost(vector<int>& preorder, vector<int>& postorder) {
+                  int n = preorder.size();
+                  return build(preorder,0,n-1,postorder,0,n-1);
+              }
+          };
